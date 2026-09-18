@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,9 +28,22 @@ jobs:
       - name: Build debug APK
         run: gradle :app:assembleDebug --stacktrace
 
-      - name: Upload APK
+      - name: Prepare APK
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/debug/*.apk dist/sakhteman-man.apk
+
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: sakhteman-man-debug
-          path: app/build/outputs/apk/debug/*.apk
+          path: dist/sakhteman-man.apk
           if-no-files-found: error
+
+      - name: GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v1.0.${{ github.run_number }}" dist/sakhteman-man.apk \
+            --title "ساختمان من v1.0.${{ github.run_number }}" \
+            --notes "فایل APK برای نصب روی اندروید. در تنظیمات گوشی، نصب از منبع ناشناس را برای مرورگر روشن کنید. ورود آزمایشی: هر شماره موبایل + کد تایید 1234"
