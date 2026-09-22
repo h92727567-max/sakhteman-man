@@ -25,18 +25,18 @@ jobs:
         with:
           gradle-version: "8.7"
 
-      - name: Build debug APK
-        run: gradle :app:assembleDebug --stacktrace
+      - name: Build release APK
+        run: gradle :app:assembleRelease --stacktrace
 
       - name: Prepare APK
         run: |
           mkdir -p dist
-          cp app/build/outputs/apk/debug/*.apk dist/sakhteman-man.apk
+          cp app/build/outputs/apk/release/*.apk dist/sakhteman-man.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: sakhteman-man-debug
+          name: sakhteman-man-release
           path: dist/sakhteman-man.apk
           if-no-files-found: error
 
@@ -46,4 +46,4 @@ jobs:
         run: |
           gh release create "v1.0.${{ github.run_number }}" dist/sakhteman-man.apk \
             --title "ساختمان من v1.0.${{ github.run_number }}" \
-            --notes "فایل APK برای نصب روی اندروید. در تنظیمات گوشی، نصب از منبع ناشناس را برای مرورگر روشن کنید. ورود آزمایشی: هر شماره موبایل + کد تایید 1234"
+            --notes "نسخه انتشار برای کافه بازار. ورود آزمایشی: هر شماره موبایل + کد تایید 1234"
